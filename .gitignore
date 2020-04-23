@@ -5,6 +5,7 @@
 __pycache__
 db.sqlite3
 media
+static
 
 /sauron_eye/New_inventory_photos/*
 !/sauron_eye/New_inventory_photos/*.png
