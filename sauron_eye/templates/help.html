@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Help</title>
+<meta name="Description" content="Help page">
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% load static %}
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="col-md-2 left-col bg-dark">
+
+
+
+      <div class="flex-container">
+
+
+
+
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <div class="bg-secondary block-top-grey">
+              <a href = "/" class="btn btn-info">На главную >></a>
+
+            <a class="btn btn-warning btn-logout" href="{% url 'logout'%}">Выйти</a>
+      </div>
+
+      <div class="help-container">
+        <h4>Как это работает?</h4>
+        <h5>Главный экран</h5>
+        <p>После авторизации на сайте, будет отображена главная страница, разберем основные элементы:</p>
+        <ul>
+          <li>Слева расположена панель с информацией о вашем/остальных профилях.<br>
+            <img src="{% static 'img/help-img/prof-list.jpg' %}"><br>
+             Здесь можно получить общую информацию о профиле.<br>
+          Если нажать кнопку с количеством <span class="badge badge-secondary">выполненных инвентаризаций</span>, то в главном окне отобразятся все инвентаризации данного профиля.</li>
+          <li>На верхней панели имеется кнопка <span class="badge badge-success"> + |  Добавить</span>, после нажатия на которую откроется новое окно.<br>
+          Вводим адрес в строку и поиск автоматически найдёт нужный адрес, нужно лишь выбрать правильный вариант и нажать кнопку <span class="badge badge-success">Применить</span>.<br>
+          <img src="{% static 'img/help-img/adress-list.jpg' %}"><br>
+         Если же введенный адрес присутствует в базе данных, то дополнительные данные будут подгружены автоматически.<br>
+         <img src="{% static 'img/help-img/adress-info.jpg' %}"><br>
+          В выпадающем списке выбираем исполнителя инвенторизации.<br>
+          <img src="{% static 'img/help-img/worker-list.jpg' %}"><br>
+           В конце выбираем технологию подключения, а также можем добавить фото объекта для наглядности. Нажимаем <span class="badge badge-success">Сохранить</span> </li>
+
+          <li>В главном окне появится новая инвентаризация в виде карточки и три варианта действий:</li>
+            <img src="{% static 'img/help-img/main-card.jpg' %}"><br>
+            <ul>
+              <li><span class="badge badge-danger">X</span> - Удаление инвентаризации.</li>
+              <li><span class="badge badge-warning">Редактировать</span> - возможность <b>добавления информации</b> о состоянии оборудования в подъездах данного адреса.</li>
+              <li><span class="badge badge-info">Подробнее</span> - возможность <b>просмотра информации</b> о данном объекте, оценок состоянии оборудования и тп.</li>
+              </ul>
+        </ul>
+
+        <h5>Редактирование инвентаризации</h5>
+        <p>На странице редактирования инвентаризации, можно изменить некоторые исходные данные об объекте, а
+        также <b>ввести информацию</b> о состоянии оборудования и приложить фото.</p>
+        <p><b>Если отсутствуют исходные данные о количестве подъездов объекта, то количество подъездов нужно ввести на странице редактирования.</b></p>
+        <img src="{% static 'img/help-img/edit-page.jpg' %}"><br>
+        <p>После заполнения общих данных об объекте, нажмите <span class="badge badge-success">Применить</span>, только после этого можно приступать к редактированию информации
+          о состоянии оборудования в подъездах.</p>
+        <img src="{% static 'img/help-img/list-podezd.jpg' %}"><br>
+        <p>Нажмите на кнопку с номером <span class="badge badge-primary">Подъезда</span>, затем откроются поля с пунктами, которые необходимо указать (при наличии). Если
+          пункт задествован, то нужно нажать чекбокс, ввести номер этажа, поставить оценку состояния и прикрепить фото.</p>
+        <img src="{% static 'img/help-img/zamechania.jpg' %}"><br>
+        <p>После заполнения данных об оборудовании в подъездах, нажмите <span class="badge badge-success">Сохранить</span>, чтобы отправить данные на сервер.</p>
+
+        <h5>Просмотр данных об инвентаризации</h5>
+        <p>Чтобы просмотреть данные об объекте, перейдите на главную страницу и нажмите кнопку <span class="badge badge-info">Подробнее</span> на карточке объекта.</p>
+        <br><br>
+        <p>Свои замечания и предложения по работе сервиса, пишите на почту: <b>nsibox@yandex.ru</b></p>
+
+      </div>
+
+
+      </div>
+
+    </div>
+
+
+
+  </div>
+{% else %}
+<div class="login-block">
+  <div class="card bg-light">
+    <form class="form-control">
+      <div class="form-group">
+
+        <h6>Пожалуйста, авторизируйтесь</h6>
+        <a class="btn btn-success" href="{% url 'login'%}">Авторизироваться</a>
+      </div>
+      </form>
+      </div>
+
+      </div>
+{% endif %}
+{% endblock %}

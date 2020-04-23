@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    {% block title %}{% endblock %}
+    {% load static %}
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- CDN бутстрапа 4, если сука бля сервак не будет в интернет ходить, то надо локальные библиотеки намутить -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <!-- моб. девайсы -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300&display=swap" rel="stylesheet">
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=41376e47-48ab-4310-8b9e-e037dbd2fba7&lang=ru_RU" type="text/javascript"></script>
+    <script type="text/javascript">
+      ymaps.ready(init);
+      function init() {
+        var suggestView1 = new ymaps.SuggestView('suggest',{
+          results : 3,
+          boundedBy : [[52.4,103.9],[52.11,104.5]]
+        });
+      }
+    </script>
+
+  </head>
+  <body>
+
+{% block content %}{% endblock %}
+<!-- начало модального окна-->
+
+
+
+<div class="modal" id="new_invent">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Новая инвентаризация</h5>
+
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <!-- <a  href = "help">помощь</h5> -->
+      </div>
+      <div class="modal-body">
+            <input id="suggest" class="form-control form-control-md" type="text" placeholder="Введите адрес">
+            <button type="button" class="btn btn-success btn-md accept" id = "adr_selector">Применить</button>
+        <h6 id = "new_invent_adr" > </h6>
+        <h6 id = "no_info" style="display:none">По данному адрессу нет информации</h6>
+        <div class="form-group">
+        <select class="form-control" id="users">
+          <option disabled selected hidden>Выбрать исполнителя</option>
+
+          {% for info in AllUsers %}
+          <option value="{{info.id}}">{{info.FirstName}} {{info.LastName}} (т.н. {{info.PersonnelNumber}})</option>
+          {%endfor%}
+
+        </select>
+      </div>
+      <div class='container' style='margin-top: 100px;'>
+      {{ exampleForm.my_date_field }}
+      {{ exampleForm.my_time_field }}
+      </div>
+        <p id = "floor_count">Этажей:</p>
+        <p id = "porch_count">Подъездов:</p>
+        <p id = "apartament_count">Количество жилых помещений:</p>
+        <p>Технология подключения:</p>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="or" name="techType" class="custom-control-input">
+            <label class="custom-control-label" for="or">ОР</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="ork" name="techType" class="custom-control-input">
+            <label class="custom-control-label" for="ork">ОРК</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="kro" name="techType" class="custom-control-input">
+            <label class="custom-control-label" for="kro">КРО</label>
+          </div>
+            <input type="file" class="form-control-file object_pic" id="card_pic">
+      </div>
+
+      <div class="modal-footer">
+        {% csrf_token %}
+        <button type="button" class="btn btn-success" disabled id="ModalFormSaveButton" >Сохранить</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Закрыть</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- конец модального окна-->
+<!-- <script src="{% static 'js/script.js' %}"></script> -->
+<script src="{% static 'js/modal_form_js.js' %}"></script>
+  </body>
+
+</html>

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{Info.adr}}</title>
+<meta name="Description" content="detail info about {{Info.adr}}">
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% load static %}
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="col-md-2 left-col bg-dark">
+
+      <nav class="navbar navbar-expand-sm navbar-dark align-items-start flex-sm-column flex-row">
+        <a href class="navbar-toggler" data-toggle="collapse" data-target=".sidebar">
+          <span class="navbar-toggler-icon"></span>
+        </a>
+        <div class="collapse navbar-collapse sidebar">
+          <ul class="flex-column navbar-nav w-100 justify-content-between left-flex-col">
+
+
+            {% for User in AllUsers %}
+            {% if user.is_staff%}
+            <li class="nav-item">
+              <div class="card">
+                <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                <div id="{{User.id}}" class="collapse">
+                  <!-- ссылка на список инвентаризаций пользователя-->
+                  <a href="#" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                  <p>{{User.Position}}</p>
+                  <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                </div>
+              </div>
+            </li>
+            {% else %}
+            {% if user.id == User.id%}
+            <li class="nav-item">
+              <div class="card">
+                <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                <div id="{{User.id}}" class="collapse">
+                  <!-- ссылка на список инвентаризаций пользователя-->
+                  <a href="#" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                  <p>{{User.Position}}</p>
+                  <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                </div>
+              </div>
+            </li>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+
+          </ul>
+        </div>
+      </nav>
+
+
+    </div>
+
+    <div class="col-md-10">
+      <div class="bg-secondary block-top-grey">
+        <a href = "/" class="btn btn-info">На главную >></a>
+
+        <a class="btn btn-warning btn-logout" href="{% url 'logout'%}">Выйти</a>
+      </div>
+
+
+
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th id = "{{Info.id}}">Инвентаризация (#<span id = "id_id">{{Info.id}}</span>)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Адрес:
+              </td>
+              <td>{{Info.adr}}</td>
+            </tr>
+            <tr>
+              <td>
+                Назначен исполнитель:
+              </td>
+              <td>{{Info.inventor_name}}</td>
+            </tr>
+            <tr>
+              <td>
+                Этажей:
+              </td>
+              <td>{{Info.floor_count}}</td>
+            </tr>
+            <tr>
+              <td>
+                Подъездов:
+              </td>
+              <td>{{Info.porch_count}}</td>
+            </tr>
+            <tr>
+              <td>
+                Количество жилых помещений:
+              </td>
+              <td>{{Info.apartament_count}}</td>
+            </tr>
+            <tr>
+              <td>
+                Технология подключения:
+              </td>
+              <td>{{Info.tech_type}}</td>
+            </tr>
+            <tr>
+              <td>
+                Дата инвентаризации (создания):
+              </td>
+              <td>{{Info.created_time}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex-container">
+
+        {%for defect in defects%}
+        <div class="card detail-card">
+          {%if defect.url == '/New_inventory_photos/blank'%}
+          <img class="card-img-top" src="/New_inventory_photos/defects_photo/none_photo.png" alt="Card image" style="width:100%">
+          {%else%}
+          <img class="card-img-top" src="{{defect.url}}" alt="Card image" style="width:100%">
+          {%endif%}
+          <div class="card-body">
+            <h5 class="card-title"><br>{{defect.name}}</h5>
+              <div class="rating-result">
+            {%for index in defect.rate%}
+            {%if index == 'true' %}
+            <span class="active"></span>
+            {%else%}
+            <span class="none"></span>
+            {%endif%}
+            {% endfor %}
+              </div>
+                <p class="card-text">Подъезд: {{defect.porch}}</p>
+                <p class="card-text">Этаж (комментарий): {{defect.comment}}</p>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+
+
+    {% else %}
+    <div class="login-block">
+      <div class="card bg-light">
+        <form class="form-control">
+          <div class="form-group">
+
+            <h6>Пожалуйста, авторизируйтесь</h6>
+            <a class="btn btn-success" href="{% url 'login'%}">Авторизироваться</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+</div>
+</div>
+    {% endif %}
+    {% endblock %}

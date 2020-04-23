@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Последние инвентаризации</title>
+<meta name="Description" content="Last inventory">
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="col-md-2 left-col bg-dark">
+
+      <nav class="navbar navbar-expand-sm navbar-dark align-items-start flex-sm-column flex-row">
+            <a href class="navbar-toggler" data-toggle="collapse" data-target=".sidebar">
+               <span class="navbar-toggler-icon"></span>
+            </a>
+            <div class="collapse navbar-collapse sidebar">
+                <ul class="flex-column navbar-nav w-100 justify-content-between left-flex-col">
+
+
+                  {% for User in AllUsers %}
+                  {% if user.is_staff%}
+                  <li class="nav-item">
+                    <div class="card">
+                      <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                      <div id="{{User.id}}" class="collapse">
+                        <!-- ссылка на список инвентаризаций пользователя-->
+                        <a href="filter?inventor_id={{User.id}}" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                        <p>{{User.Position}}</p>
+                        <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                      </div>
+                    </div>
+                  </li>
+                  {% else %}
+                  {% if user.id == User.id%}
+                  <li class="nav-item">
+                    <div class="card">
+                      <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                      <div id="{{User.id}}" class="collapse">
+                        <!-- ссылка на список инвентаризаций пользователя-->
+                        <a href="#" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                        <p>{{User.Position}}</p>
+                        <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                      </div>
+                    </div>
+                  </li>
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+
+                </ul>
+            </div>
+        </nav>
+
+      <div class="flex-container">
+
+
+
+
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <div class="bg-secondary block-top-grey">
+              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#new_invent"> + |  Добавить</button>
+              <a class="btn btn-info btn-help" href="help">Помощь</a>
+            <a class="btn btn-warning btn-logout" href="{% url 'logout'%}">Выйти</a>
+      </div>
+
+      <h4 class="last-invent-head">Последние инвентаризации</h4>
+      <div class="flex-container">
+
+
+{% for Inventorian in Inventorian_info %}
+
+{% if user.is_staff%}
+
+        <div class="card">
+          {% if Inventorian.photo == 'blank' %}
+          <img class="card-img-top" src="/New_inventory_photos/none_adr_hQ46cJB.png" alt="Card image">
+          {% else %}
+          <img class="card-img-top" src="{{Inventorian.photo.url}}" alt="Card image">
+          {% endif %}
+          <div class="card-body">
+
+
+            <h5 class="card-title">
+
+
+              {% if Inventorian.status %}
+              <span class="badge badge-primary">Новая</span>
+              {% else %}
+              <span class="badge badge-secondary">Ожидает проверки</span>
+              {% endif %}
+
+              <br>{{Inventorian.adr}}</h5>
+
+              <p class="card-text">Оценка состояния: {{Inventorian.avg_rating}}</p>
+              <p class="card-text">Дата назначения: {{Inventorian.created_time}}</p>
+              <p class="card-text">Дата исполнения: </p>
+            <a href="delete?id={{Inventorian.id}}" class="btn btn-delete btn-danger"></a>
+            <a href="edit?id={{Inventorian.id}}" class="btn btn-edit btn-warning btn-edit">Изменить</a>
+            <a href="detail?id={{Inventorian.id}}" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+
+{%else%}
+{% if Inventorian.inventor_id == user.id%}
+
+        <div class="card">
+          <img class="card-img-top" src="{{Inventorian.photo.url}}" alt="Card image">
+          <div class="card-body">
+
+
+            <h5 class="card-title">
+
+
+              {% if Inventorian.status %}
+              <span class="badge badge-primary">Новая</span>
+              {% else %}
+              <span class="badge badge-secondary">Ожидает проверки</span>
+              {% endif %}
+
+              <br>{{Inventorian.adr}}</h5>
+
+              <p class="card-text">Оценка состояния: {{Inventorian.avg_rating}}</p>
+              <p class="card-text">Дата назначения: {{Inventorian.created_time}}</p>
+              <p class="card-text">Дата исполнения: </p>
+            <!-- <a href="delete?id={{Inventorian.id}}" class="btn btn-delete btn-danger">X</a> -->
+            <a href="edit?id={{Inventorian.id}}" class="btn btn-edit btn-warning btn-edit">Изменить</a>
+            <a href="detail?id={{Inventorian.id}}" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+
+{% endif %}
+{% endif %}
+{% endfor %}
+
+<!-- всякие карточки
+        <div class="card">
+          <img class="card-img-top" src="../static/img/2.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-secondary">Изменённая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+              <p class="card-text">Дата постройки: 15.02.2020</p>
+              <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+        <div class="card">
+          <img class="card-img-top" src="../static/img/3.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-secondary">Изменённая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+              <p class="card-text">Дата постройки: 15.02.2020</p>
+              <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+        <div class="card">
+          <img class="card-img-top" src="../static/img/2.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-primary">Новая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+              <p class="card-text">Дата постройки: 15.02.2020</p>
+              <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+        <div class="card">
+          <img class="card-img-top" src="../static/img/2.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-secondary">Изменённая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+              <p class="card-text">Дата постройки: 15.02.2020</p>
+              <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+        <div class="card">
+          <img class="card-img-top" src="../static/img/3.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-primary">Новая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+              <p class="card-text">Дата постройки: 15.02.2020</p>
+              <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+        <div class="card">
+          <img class="card-img-top" src="../static/img/2.jpg" alt="Card image" style="width:100%">
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-secondary">Изменённая</span><br>г. Иркутск, ул. Байкальская 254а</h5>
+            <p class="card-text">Дата постройки: 15.02.2020</p>
+            <p class="card-text">Дата последней инвентаризации: 15.02.2020</p>
+            <a href="#" class="btn btn-delete btn-danger">X</a>
+            <a href="#" class="btn btn-edit btn-warning">Редактировать</a>
+            <a href="#" class="btn btn-primary btn-info">Подробнее</a>
+          </div>
+        </div>
+-->
+
+      </div>
+      <!--<ul class="pagination">
+        <li class="page-item disabled"><a class="page-link" href="#">Назад</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Вперед</a></li>
+      </ul>-->
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="login-block">
+  <div class="card bg-light">
+    <form class="form-control">
+      <div class="form-group">
+
+        <h6>Пожалуйста, авторизируйтесь</h6>
+        <a class="btn btn-success" href="{% url 'login'%}">Авторизироваться</a>
+      </div>
+      </form>
+      </div>
+
+      </div>
+{% endif %}
+{% endblock %}

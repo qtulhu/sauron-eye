@@ -1,0 +1,734 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>{{Info.adr}}</title>
+<meta name="Description" content="page for edit {{Info.adr}}">
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% load static %}
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="col-md-2 left-col bg-dark">
+
+      <nav class="navbar navbar-expand-sm navbar-dark align-items-start flex-sm-column flex-row">
+            <a href class="navbar-toggler" data-toggle="collapse" data-target=".sidebar">
+               <span class="navbar-toggler-icon"></span>
+            </a>
+            <div class="collapse navbar-collapse sidebar">
+                <ul class="flex-column navbar-nav w-100 justify-content-between left-flex-col">
+
+
+                  {% for User in AllUsers %}
+                  {% if user.is_staff%}
+                  <li class="nav-item">
+                    <div class="card">
+                      <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                      <div id="{{User.id}}" class="collapse">
+                        <!-- ссылка на список инвентаризаций пользователя-->
+                        <a href="#" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                        <p>{{User.Position}}</p>
+                        <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                      </div>
+                    </div>
+                  </li>
+                  {% else %}
+                  {% if user.id == User.id%}
+                  <li class="nav-item">
+                    <div class="card">
+                      <button type="button" class="btn btn-block btn-primary" data-toggle="collapse" data-target="#{{User.id}}">{{User.FirstName}} {{User.LastName}}</button>
+                      <div id="{{User.id}}" class="collapse">
+                        <!-- ссылка на список инвентаризаций пользователя-->
+                        <a href="#" class="btn btn-secondary link_complete">Выполнено: {{User.inventory_count}}</a>
+                        <p>{{User.Position}}</p>
+                        <p>Табельный номер: #{{User.PersonnelNumber}}</p>
+
+                      </div>
+                    </div>
+                  </li>
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+
+                </ul>
+            </div>
+        </nav>
+
+      <div class="flex-container">
+
+
+
+
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <div class="bg-secondary block-top-grey">
+              <a href = "/" class="btn btn-info">На главную >></a>
+
+            <a class="btn btn-warning btn-logout" href="{% url 'logout'%}">Выйти</a>
+      </div>
+
+
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th id = "{{Info.id}}">Инвентаризация (#<span id = "id_id">{{Info.id}}</span>)</th>
+            <th>Текущие данные</th>
+            <th>Корректные данные</th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>
+              Адрес:
+            </td>
+            <td>{{Info.adr}}</td>
+
+
+
+            <td><!--<input type="text" class="form-control form-control">--></td>
+
+
+
+          </tr>
+          <tr>
+            <td>
+              Назначен исполнитель:
+            </td>
+            <td>{{Info.inventor_name}}</td>
+            <td>
+              <div class="form-group">
+
+<!-- Проверка прав пользователя для изменения исполнителя инвенторизации -->
+                {% if user.is_staff%}
+              <select class="form-control" id="users">
+                <option disabled selected hidden>Исполнители</option>
+                {% for info in AllUsers %}
+                <option value="{{info.id}}">{{info.FirstName}} {{info.LastName}} (т.н. {{info.PersonnelNumber}})</option>
+                {%endfor%}
+              </select>
+                {%endif%}
+
+            </div>
+          </td>
+
+          </tr>
+          <tr>
+            <td>
+              Этажей:
+            </td>
+            <td>{{Info.floor_count}}</td>
+            <td><input type="number" id = "edit_floor_count" class="form-control form-control"></td>
+
+          </tr>
+          <tr>
+            <td>
+              Подъездов:
+            </td>
+            <td id = "edit_page_porch_count">{{Info.porch_count}}</td>
+            <td><input type="number" id = "edit_porch_count" class="form-control form-control"></td>
+
+          </tr>
+          <tr>
+            <td>
+              Количество жилых помещений:
+            </td>
+            <td>{{Info.apartament_count}}</td>
+            <td><input type="number" id = "edit_apartament_count" class="form-control form-control"></td>
+
+          </tr>
+          <tr>
+            <td>
+              Технология подключения:
+            </td>
+            <td>{{Info.tech_type}}</td>
+            <td>
+
+      <!--        <input type="text" class="form-control form-control">  -->
+
+
+              <div class="form-group">
+              <select class="form-control" id="techType">
+                <option disabled selected hidden>Технология подключения</option>
+                <option value="or">ОР</option>
+                <option value="kro">КРО</option>
+                <option value="ork">ОРК</option>
+              </select>
+            </div>
+
+            </td>
+
+          </tr>
+          <tr>
+            <td>
+              Дата инвентаризации (создания):
+            </td>
+            <td>{{Info.created_time}}</td>
+            <td><!--<input type="text" class="form-control form-control">-->
+              <button type="button" class="btn btn-success" id="refresh_info">Применить</button>
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- <div class="cssload-container" id = "cssload" style="display:none">
+      	<div class="cssload-whirlpool" ></div>
+      </div> -->
+
+
+      <div id="bowlG" style="display:none" >
+      	<div id="bowl_ringG">
+      		<div class="ball_holderG">
+      			<div class="ballG">
+      			</div>
+      		</div>
+      	</div>
+      </div>
+
+      {% if show %}
+
+      {% for c in counter  %}
+      <button type="button" class="btn btn-block btn-primary porch-button" data-toggle="collapse" data-target="#porch{{c}}">Подъезд {{c}}</button>
+         <div id="porch{{c}}" class="collapse">
+           <div class="table-responsive">
+           <table class="table table-striped">
+             <thead>
+               <tr>
+                 <th></th>
+                 <th>Замечания для устранения</th>
+                 <th>№ этажа</th>
+                 <th>Оценка состояния</th>
+               </tr>
+             </thead>
+             <thead>
+               <tr>
+                 <th></th>
+                 <th>Оптические коробки</th>
+                 <th>Комментарий</th>
+                 <th>(1-5)</th>
+               </tr>
+             </thead>
+             <tbody>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=1" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>1 технология (патчкорд сварен с волокном DROP кабеля)<input type="file" id="p={{c}}&p=1" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=1" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=1" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=2" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>2 технология (патчкорды подключены через опт. розетку)<input type="file" id="p={{c}}&p=2" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=2" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=2" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=3" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>3 технология (патчкорды подключены через сплиттер)<input type="file" id="p={{c}}&p=3" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=3" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=3" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=4" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>КРО установлены в нише<input type="file" id="p={{c}}&p=4" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=4" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=4" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=5" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>КРО установлена на стене<input type="file" id="p={{c}}&p=5" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=5" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=5" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=6" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Нет крышки или кожуха на коробках (ОРК)<input type="file" id="p={{c}}&p=6" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=6" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=6" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=7" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Необходима замена коробки<input type="file" id="p={{c}}&p=6"class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=7" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=7" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=8" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Отсутствует маркировка коробки/логотип<input type="file" id="p={{c}}&p=8" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=8" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=8" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=9" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Отсутствует маркировка патчкордов<input type="file" id="p={{c}}&p=9" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=9" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=9" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=10" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Запас волокон не уложен, или не уложены гильзы в ложементы, или не закреплен оптический разветвитель<input type="file" id="p={{c}}&p=10" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=10" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=10" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=11" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Крышка коробки не закрывается<input type="file" id="p={{c}}&p=11" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=11" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=11" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <thead>
+                 <tr>
+                   <th></th>
+                   <th>Патчкорды/кабель-канал</th>
+                   <th></th>
+                   <th></th>
+                 </tr>
+               </thead>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=12" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Отсутствует кабель-канал, необходим монтаж<input type="file" id="p={{c}}&p=12" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=12" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=12" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=13" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Кабель-канал не закреплен монтаж<input type="file" id="p={{c}}&p=13" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=13" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=13" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=14" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Патчкорд не уложен в кабель-канал<input type="file" id="p={{c}}&p=14" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=14" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=14" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=15" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Нет крышки на коробке или не закрывается<input type="file" id="p={{c}}&p=15" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=15" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=15" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=16" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Ввод в квартиру не защищён<input type="file" id="p={{c}}&p=16" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=16" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=16" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <thead>
+                 <tr>
+                   <th></th>
+                   <th>Межэтажный переход</th>
+                   <th></th>
+                   <th></th>
+                 </tr>
+               </thead>
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=17" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Межэтажный переход по слаботочным нишам<input type="file" id="p={{c}}&p=17" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=17" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=17" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=18" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Межэтажный переход по построенным стоякам<input type="file" id="p={{c}}&p=18" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=18" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=18" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=19" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>- ПНД труба, указать размер<input type="file" id="p={{c}}&p=19" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=19" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=19" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=20" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>- Короб (материал), указать размер<input type="file" id="p={{c}}&p=20" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=20" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=20" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=21" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Дефект в креплении межэтажного стояка<input type="file" id="p={{c}}&p=21" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=21" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=21" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=22" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Крышка короба не закрывается<input type="file" id="p={{c}}&p=22" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=22" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=22" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=23" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Крышка короба отсутствует<input type="file" id="p={{c}}&p=23" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=23" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=23" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+
+               <tr>
+                 <td>
+                   <div class="form-check">
+                       <input type="checkbox" id="p={{c}}&c=24" class="form-check-input">
+                   </div>
+                 </td>
+                 <td>Труба ПНД сломана<input type="file" id="p={{c}}&p=24" class="form-control-file border"></td>
+                 <td><input type="text" id="p={{c}}&f=24" class="form-control form-control-sm"></td>
+                 <td>
+                   <select id = "p={{c}}&s=24" class="form-control-sm">
+                     <option value = "1">1</option>
+                     <option value = "2">2</option>
+                     <option value = "3">3</option>
+                     <option value = "4">4</option>
+                     <option value = "5">5</option>
+                   </select>
+                 </td>
+               </tr>
+             </tbody>
+           </table>
+         </div>
+         </div>
+
+      {% endfor %}
+
+      {% endif %}
+
+    </div>
+
+    <div class="bg-light block-bottom-grey">
+      <button type="button" class="btn btn-success" id="push_porch_info_to_base">Сохранить</button>
+      <button type="button" class="btn btn-danger">Отмена</button>
+    </div>
+      </div>
+
+    </div>
+<script src="{% static 'js/edit_page.js' %}"></script>
+<script src="{% static 'js/new_update.js' %}"></script>
+
+
+  </div>
+
+{% else %}
+<div class="login-block">
+  <div class="card bg-light">
+    <form class="form-control">
+      <div class="form-group">
+
+        <h6>Пожалуйста, авторизируйтесь</h6>
+        <a class="btn btn-success" href="{% url 'login'%}">Авторизироваться</a>
+      </div>
+      </form>
+      </div>
+
+      </div>
+{% endif %}
+{% endblock %}

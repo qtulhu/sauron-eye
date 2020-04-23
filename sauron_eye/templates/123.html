@@ -1,0 +1,43 @@
+{%for defect in defects%}
+      <div class="card detail-card">
+        <img class="card-img-top" src="{{defect.url}}" alt="Card image" style="width:100%">
+        <!-- <img class="card-img-top" src="{% static 'img/none_photo.png' %}" alt="Card image" style="width:100%"> -->
+        <div class="card-body">
+
+
+          <h5 class="card-title"><br>{{defect.name}}</h5>
+
+
+              <div class="rating-result">
+
+                {%for index in defect.rate%}
+                {{defect.rate}}
+                <span class="active"></span>
+                {% endfor %}
+
+                <!-- <span class="active"></span>
+                <span class="active"></span>
+                <span class="none"></span>
+                <span class="none"></span> -->
+              </div>
+            <p class="card-text">Подъезд: {{defect.porch}}</p>
+            <p class="card-text">Этаж (комментарий): {{defect.comment}}</p>
+
+
+        </div>
+      </div>
+{% endfor %}
+
+
+
+<div class="rating-result">
+
+  <!-- {% for index in defect.rate %} -->
+  <!-- {% if index %} -->
+  <span class="active"></span>
+  <!-- {% else %} -->
+  <span class="none"></span>
+  <!-- {& endif &} -->
+  <!-- {% endfor %} -->
+
+</div>
